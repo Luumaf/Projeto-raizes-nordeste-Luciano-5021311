@@ -1,0 +1,14 @@
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    PROJECT_NAME: str = "Raízes do Nordeste"
+    DATABASE_URL: str
+
+    # Diz ao Pydantic para ler as variáveis do arquivo .env na raiz do projeto
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", extra="ignore"
+    )
+
+
+settings = Settings()
