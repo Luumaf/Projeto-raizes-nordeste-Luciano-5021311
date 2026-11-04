@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api import usuarios
+from app.api.v1.endpoints import usuarios, pratos  # <-- Ajustado para o caminho exato da pasta
 from app.db.session import engine, Base
 
 # Cria as tabelas no banco de dados automaticamente ao iniciar (se não existirem)
@@ -12,7 +12,8 @@ app = FastAPI(
 )
 
 # Inclui as rotas de usuarios na aplicacao principal
-app.include_router(usuarios.router)
+app.include_router(usuarios.router, prefix="/api/v1", tags=["Usuarios"])
+app.include_router(pratos.router, prefix="/api/v1", tags=["Pratos"])
 
 
 @app.get("/")
