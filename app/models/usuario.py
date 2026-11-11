@@ -9,3 +9,4 @@ class Usuario(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     senha_hash = Column(String, nullable=False)
     ativo = Column(Boolean, default=True)
+    perfil = Column(String, nullable=False, default="CLIENTE", server_default="CLIENTE")

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.models.pratos import Prato
 from app.schemas.pratos import PratoCreate, PratoResponse
-from app.api.v1.endpoints.usuarios import get_current_user
+from app.core.deps import get_current_user
 from app.models.usuario import Usuario
 
 router = APIRouter()
@@ -59,4 +59,3 @@ def apagar_prato(
     db.delete(prato)
     db.commit()
     return None
-

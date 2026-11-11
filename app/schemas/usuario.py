@@ -13,5 +13,6 @@ class UsuarioCreate(UsuarioBase):
 class UsuarioResponse(UsuarioBase):
     id: int
     ativo: bool
+    perfil: str
 
     model_config = ConfigDict(from_attributes=True)
