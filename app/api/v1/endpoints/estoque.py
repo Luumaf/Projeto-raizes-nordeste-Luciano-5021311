@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-
 from app.core.deps import get_current_manager, get_current_user
 from app.db.session import get_db
 from app.models.estoque import Estoque

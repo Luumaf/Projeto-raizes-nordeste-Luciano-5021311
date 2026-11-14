@@ -9,27 +9,21 @@ from app.db.session import get_db
 from app.models.usuario import Usuario
 from app.models.pontos_fidelidade import PontosFidelidade
 from app.schemas.fidelidade import FidelidadeResponse
-from app.schemas.usuario import (
-    ConsentimentoFidelidadeUpdate,
-    UsuarioCreate,
-    UsuarioResponse,
-)
+from app.schemas.usuario import (ConsentimentoFidelidadeUpdate,UsuarioCreate,UsuarioResponse,)
 from app.core.security import gerar_hash_senha, verificar_senha
 from app.core.config_jwt import criar_access_token
 from app.core.deps import get_current_user
 
 
-# Instância do roteador para o FastAPI
 router = APIRouter(prefix="/usuarios", tags=["Usuários e Autenticação"])
 
-# Schema específico para validar o login (apenas email e senha)
+
 class LoginSchema(BaseModel):
     email: str
     senha: str
 
 @router.post("/", response_model=UsuarioResponse, status_code=status.HTTP_201_CREATED)
 def cadastrar_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
-    # Verifica se o e-mail já existe
     usuario_existente = db.query(Usuario).filter(Usuario.email == usuario.email).first()
     if usuario_existente:
         raise HTTPException(
@@ -37,12 +31,11 @@ def cadastrar_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
             detail="E-mail já cadastrado no sistema."
         )
     
-    # Cria o usuário com a senha criptografada (hash)
     senha_criptografada = gerar_hash_senha(usuario.senha)
     novo_usuario = Usuario(
         nome=usuario.nome,
         email=usuario.email,
-        senha_hash=senha_criptografada,  # Usando o campo correto do seu model
+        senha_hash=senha_criptografada,
         ativo=True
     )
     

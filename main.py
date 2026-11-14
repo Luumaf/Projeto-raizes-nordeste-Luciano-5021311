@@ -13,13 +13,9 @@ from app.models.pontos_fidelidade import PontosFidelidade
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(
-    title="Raízes do Nordeste API de Luciano",
-    description="API desenvolvida para o projeto acadêmico da Uninter de Luciano Gomes Martines Filho.",
-    version="1.0.0",
-)
+app = FastAPI(title="Raízes do Nordeste API de Luciano",description="API do projeto da Uninter de Luciano Gomes Martines Filho.",version="1.0.0",)
 
-# Inclui as rotas de usuarios na aplicacao principal
+
 app.include_router(usuarios.router, prefix="/api/v1", tags=["Usuarios"])
 app.include_router(pratos.router, prefix="/api/v1", tags=["Pratos"])
 app.include_router(unidades.router, prefix="/api/v1")

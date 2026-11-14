@@ -2,10 +2,10 @@ from datetime import datetime, timedelta
 from typing import Optional
 from jose import jwt
 
-# Chave secreta super importante (em produção, isso ficaria no arquivo .env)
-SECRET_KEY = "sua_chave_secreta_super_segura_aqui_mude_depois"
+
+SECRET_KEY = "Raizes_luciano_nordeste1995"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30  # O token expira em 30 minutos
+ACCESS_TOKEN_EXPIRE_MINUTES = 30  # 30min
 
 def criar_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()

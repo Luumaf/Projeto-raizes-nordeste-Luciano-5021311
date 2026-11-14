@@ -3,11 +3,8 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 from typing import Optional
-
-# Importa a sessão e o modelo usando a estrutura 'app'
 from app.db.session import get_db        
 from app.models.usuario import Usuario   
-# Importa o SECRET_KEY e ALGORITHM do ficheiro onde eles estão configurados (ex: config_jwt)
 from app.core.config_jwt import SECRET_KEY, ALGORITHM
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/usuarios/login")
