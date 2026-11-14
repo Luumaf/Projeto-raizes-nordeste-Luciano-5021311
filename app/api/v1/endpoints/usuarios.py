@@ -1,13 +1,22 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from app.db.session import get_db
 from app.models.usuario import Usuario
-from app.schemas.usuario import UsuarioCreate, UsuarioResponse
+from app.models.pontos_fidelidade import PontosFidelidade
+from app.schemas.fidelidade import FidelidadeResponse
+from app.schemas.usuario import (
+    ConsentimentoFidelidadeUpdate,
+    UsuarioCreate,
+    UsuarioResponse,
+)
 from app.core.security import gerar_hash_senha, verificar_senha
 from app.core.config_jwt import criar_access_token
 from app.core.deps import get_current_user
-from fastapi.security import OAuth2PasswordRequestForm
 
 
 # Instância do roteador para o FastAPI
@@ -66,3 +75,49 @@ def read_users_me(current_user: Usuario = Depends(get_current_user)):
     Retorna os dados do utilizador atualmente autenticado através do token JWT.
     """
     return current_user
+
+
+@router.patch("/me/fidelidade/consentimento")
+def atualizar_consentimento_fidelidade(
+    dados: ConsentimentoFidelidadeUpdate,
+    db: Session = Depends(get_db),
+    current_user: Usuario = Depends(get_current_user),
+):
+    agora = datetime.now(timezone.utc).replace(tzinfo=None)
+
+    if dados.consentir:
+        if not current_user.consentimento_fidelidade:
+            current_user.consentimento_fidelidade_em = agora
+        current_user.consentimento_fidelidade = True
+        current_user.consentimento_fidelidade_revogado_em = None
+    else:
+        if current_user.consentimento_fidelidade:
+            current_user.consentimento_fidelidade_revogado_em = agora
+        current_user.consentimento_fidelidade = False
+
+    db.commit()
+    db.refresh(current_user)
+    return {
+        "consentimento_fidelidade": current_user.consentimento_fidelidade,
+        "consentimento_fidelidade_em": current_user.consentimento_fidelidade_em,
+        "consentimento_fidelidade_revogado_em": (
+            current_user.consentimento_fidelidade_revogado_em
+        ),
+    }
+
+
+@router.get("/me/fidelidade", response_model=FidelidadeResponse)
+def consultar_fidelidade(
+    db: Session = Depends(get_db),
+    current_user: Usuario = Depends(get_current_user),
+):
+    saldo = db.query(func.coalesce(func.sum(PontosFidelidade.pontos), 0)).filter(
+        PontosFidelidade.usuario_id == current_user.id
+    ).scalar()
+    historico = (
+        db.query(PontosFidelidade)
+        .filter(PontosFidelidade.usuario_id == current_user.id)
+        .order_by(PontosFidelidade.criado_em.desc(), PontosFidelidade.id.desc())
+        .all()
+    )
+    return {"saldo_pontos": saldo, "historico": historico}

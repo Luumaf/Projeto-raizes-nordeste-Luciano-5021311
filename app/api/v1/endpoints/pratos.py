@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.models.pratos import Prato
 from app.schemas.pratos import PratoCreate, PratoResponse
-from app.core.deps import get_current_user
+from app.core.deps import get_current_manager
 from app.models.usuario import Usuario
 
 router = APIRouter()
@@ -14,7 +14,11 @@ def listar_pratos(db: Session = Depends(get_db)):
     return db.query(Prato).all()
 
 @router.post("/", response_model=PratoResponse, status_code=status.HTTP_201_CREATED)
-def criar_prato(prato: PratoCreate, db: Session = Depends(get_db), current_user: Usuario = Depends(get_current_user)):
+def criar_prato(
+    prato: PratoCreate,
+    db: Session = Depends(get_db),
+    current_user: Usuario = Depends(get_current_manager),
+):
     novo_prato = Prato(
         nome=prato.nome,
         descricao=prato.descricao,
@@ -31,7 +35,7 @@ def atualizar_prato(
     prato_id: int, 
     prato_data: PratoCreate, 
     db: Session = Depends(get_db),
-    current_user: Usuario = Depends(get_current_user)  # <-- Adiciona a segurança aqui
+    current_user: Usuario = Depends(get_current_manager),
 ):
     prato = db.query(Prato).filter(Prato.id == prato_id).first()
     if not prato:
@@ -50,7 +54,7 @@ def atualizar_prato(
 def apagar_prato(
     prato_id: int, 
     db: Session = Depends(get_db),
-    current_user: Usuario = Depends(get_current_user)  # <-- Adiciona a segurança aqui
+    current_user: Usuario = Depends(get_current_manager),
 ):
     prato = db.query(Prato).filter(Prato.id == prato_id).first()
     if not prato:

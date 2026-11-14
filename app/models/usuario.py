@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Boolean, Column, DateTime, Integer, String
 from app.db.session import Base
 
 class Usuario(Base):
@@ -10,3 +10,11 @@ class Usuario(Base):
     senha_hash = Column(String, nullable=False)
     ativo = Column(Boolean, default=True)
     perfil = Column(String, nullable=False, default="CLIENTE", server_default="CLIENTE")
+    consentimento_fidelidade = Column(
+        Boolean,
+        nullable=False,
+        default=False,
+        server_default="0",
+    )
+    consentimento_fidelidade_em = Column(DateTime, nullable=True)
+    consentimento_fidelidade_revogado_em = Column(DateTime, nullable=True)
